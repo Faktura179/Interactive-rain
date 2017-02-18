@@ -18,11 +18,14 @@ int main()
 
 	window.setActive(true);
 
-	std::vector<sf::RectangleShape> rectangles;
+	float spd = 0;																			//added speed of "droplets"
+	std::vector<float> speed;																//container for speed based on the thickness
+	std::vector<sf::RectangleShape> rectangles;												//container for "droplets"
 	std::srand(std::time(0));
-	for (int i = 0; i < 100; i++) {
-		rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand()%15)/10.f+1,(rand()%500)/10.f+3)));
-		rectangles[i].setPosition(sf::Vector2f(rand()%800,rand()%600));
+	for (int i = 0; i < 100; i++) {															//initializing 100 droplets
+		rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand()%15)/10.f+1,(rand()%500)/10.f+3)));					//adding new "rain droplet" betwen 1 and 2.5 thickness and 8 and 58 length
+		rectangles[i].setPosition(sf::Vector2f(rand()%ScreenX,rand()%ScreenY));											//giving the droplet random coordinates on the screen(canvas), constants representing initial values
+		speed.push_back((1/rectangles[i].getSize().x)*2);																//setting the speed of droplet based on its thickness (larger is slower, to maintain perspective)
 	}
 
 	while (window.isOpen())
@@ -41,29 +44,36 @@ int main()
 					glViewport(0, 0, event.size.width, event.size.height);
 					break;
 
-				case sf::Event::KeyPressed:
-					if (event.key.code == sf::Keyboard::Right) {
-						rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand() % 15) / 10.f + 1, (rand() % 500) / 10.f + 8)));
-						rectangles[rectangles.size()-1].setPosition(sf::Vector2f(rand() % 800, rand() % 600));
+				case sf::Event::KeyPressed:													//if any key is pressed
+					if (event.key.code == sf::Keyboard::Right) {							//if right arrow is pressed
+						rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand() % 15) / 10.f + 1, (rand() % 500) / 10.f + 8)));				//adding new "rain droplet" betwen 1 and 2.5 thickness and 8 and 58 length
+						rectangles[rectangles.size()-1].setPosition(sf::Vector2f(rand() % window.getSize().x, rand() % window.getSize().y));		//giving the droplet random coordinates on the screen (canvas)
+						speed.push_back((1 / rectangles[rectangles.size() - 1].getSize().x) * 2);													//setting the speed of droplet based on its thickness (larger is slower, to maintain perspective)
 					}
-					else if (event.key.code == sf::Keyboard::Left) {
-						if(rectangles.size()>0)
+					else if (event.key.code == sf::Keyboard::Left) {						//if left arrow is pressed
+						if(rectangles.size()>0)												//deleting a droplet if there is any to delete
 							rectangles.pop_back();
+					}
+					else if (event.key.code == sf::Keyboard::Up) {							//if up arrow is pressed
+						spd++;																//increasing speed of all droplets
+					}
+					else if (event.key.code == sf::Keyboard::Down) {						//if down arrow is pressed
+						spd--;																//decreasing speed of all droplets
 					}
 					break;
 			}
 		}
 		window.clear(sf::Color::Black);
 
-		for (int i = 0; i < rectangles.size(); i++) {
-			if (rectangles[i].getPosition().y <= ScreenY)
-				rectangles[i].setPosition(rectangles[i].getPosition().x, rectangles[i].getPosition().y + 2);
-			else {
-				rectangles[i].setPosition(rectangles[i].getPosition().x, -40);
+		for (int i = 0; i < rectangles.size(); i++) {										//moving droplets
+			if (rectangles[i].getPosition().y <= ScreenY)									//if on the screen
+				rectangles[i].setPosition(rectangles[i].getPosition().x, rectangles[i].getPosition().y + speed[i] + spd);			//moving it downward and never to sides
+			else {																			//if off the screen
+				rectangles[i].setPosition(rectangles[i].getPosition().x, -40);				//moving it a little above the screen (so it doesnt appear out of nowhere)
 			}
 		}
 
-		for (int i = 0; i < rectangles.size(); i++) {
+		for (int i = 0; i < rectangles.size(); i++) {										//drawing droplets
 			window.draw(rectangles[i]);
 		}
 
