@@ -8,10 +8,12 @@
 #include "SFML\OpenGL.hpp"
 #include <ctime>
 
+const int ScreenX = 800;
+const int ScreenY = 600;
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!", sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(ScreenX, ScreenY), "SFML works!", sf::Style::Default);
 	window.setVerticalSyncEnabled(true);
 
 	window.setActive(true);
@@ -19,7 +21,7 @@ int main()
 	std::vector<sf::RectangleShape> rectangles;
 	std::srand(std::time(0));
 	for (int i = 0; i < 100; i++) {
-		rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand()%15)/10.f+1,(rand()%200)/10.f+3)));
+		rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand()%15)/10.f+1,(rand()%500)/10.f+3)));
 		rectangles[i].setPosition(sf::Vector2f(rand()%800,rand()%600));
 	}
 
@@ -41,28 +43,30 @@ int main()
 
 				case sf::Event::KeyPressed:
 					if (event.key.code == sf::Keyboard::Right) {
-						rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand() % 15) / 10.f + 1, (rand() % 600) / 10.f + 8)));
+						rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand() % 15) / 10.f + 1, (rand() % 500) / 10.f + 8)));
+						rectangles[rectangles.size()-1].setPosition(sf::Vector2f(rand() % 800, rand() % 600));
 					}
 					else if (event.key.code == sf::Keyboard::Left) {
-						rectangles.pop_back();
+						if(rectangles.size()>0)
+							rectangles.pop_back();
 					}
 					break;
 			}
-			window.clear(sf::Color::Black);
+		}
+		window.clear(sf::Color::Black);
 
-			/*for (int i = 0; i < rectangles.size(); i++) {
-				if(rectangles[i].getPosition())
-				rectangles[i].move();
-			}*/
-
-			for (int i = 0; i < rectangles.size(); i++) {
-				window.draw(rectangles[i]);
+		for (int i = 0; i < rectangles.size(); i++) {
+			if (rectangles[i].getPosition().y <= ScreenY)
+				rectangles[i].setPosition(rectangles[i].getPosition().x, rectangles[i].getPosition().y + 2);
+			else {
+				rectangles[i].setPosition(rectangles[i].getPosition().x, -40);
 			}
-			
-			window.display();
 		}
 
-		
+		for (int i = 0; i < rectangles.size(); i++) {
+			window.draw(rectangles[i]);
+		}
+
 		window.display();
 	}
 
