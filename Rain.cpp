@@ -25,7 +25,7 @@ int main()
 	for (int i = 0; i < 100; i++) {															//initializing 100 droplets
 		rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand()%15)/10.f+1,(rand()%500)/10.f+3)));					//adding new "rain droplet" betwen 1 and 2.5 thickness and 8 and 58 length
 		rectangles[i].setPosition(sf::Vector2f(rand()%ScreenX,rand()%ScreenY));											//giving the droplet random coordinates on the screen(canvas), constants representing initial values
-		speed.push_back(1/(rectangles[i].getSize().x*rectangles[i].getSize().x)*10);									//setting the speed of droplet based on its thickness (larger is slower, to maintain perspective)
+		speed.push_back((rectangles[i].getSize().x)*rectangles[i].getSize().x);											//setting the speed of droplet based on its thickness (larger is faster, to maintain perspective)
 	}
 
 	while (window.isOpen())
@@ -48,7 +48,7 @@ int main()
 					if (event.key.code == sf::Keyboard::Right) {							//if right arrow is pressed
 						rectangles.push_back(sf::RectangleShape(sf::Vector2f((rand() % 15) / 10.f + 1, (rand() % 500) / 10.f + 8)));				//adding new "rain droplet" betwen 1 and 2.5 thickness and 8 and 58 length
 						rectangles[rectangles.size()-1].setPosition(sf::Vector2f(rand() % window.getSize().x, rand() % window.getSize().y));		//giving the droplet random coordinates on the screen (canvas)
-						speed.push_back(1 / (rectangles[rectangles.size() - 1].getSize().x * rectangles[rectangles.size() - 1].getSize().x) * 10);	//setting the speed of droplet based on its thickness (larger is slower, to maintain perspective)
+						speed.push_back(rectangles[rectangles.size() - 1].getSize().x * rectangles[rectangles.size() - 1].getSize().x);				//setting the speed of droplet based on its thickness (larger is faster, to maintain perspective)
 					}
 					else if (event.key.code == sf::Keyboard::Left) {						//if left arrow is pressed
 						if(rectangles.size()>0)												//deleting a droplet if there is any to delete
